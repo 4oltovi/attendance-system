@@ -1,0 +1,1 @@
+@extends("layouts.app") @section("title","Системаи Ҳозирӣ") @section("content")<div class="container"><h4>{{ ucfirst(str_replace("/", " - ", "courses/index")) }}</h4><p>Ин саҳифа дар ҳоли коркард аст.</p></div>@endsection
