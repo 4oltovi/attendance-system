@@ -1,7 +1,92 @@
 <!DOCTYPE html>
 <html lang="tj"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="csrf-token" content="{{ csrf_token() }}"><title>@yield('title','Панели идоракунӣ') - Системаи Ҳозирӣ</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<style>:root{--sidebar-width:260px;--sidebar-bg:#1e293b}body{font-family:'Segoe UI',sans-serif;background:#f1f5f9;overflow-x:hidden}.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-width);height:100vh;background:var(--sidebar-bg);z-index:1000;overflow-y:auto}.sidebar-header{padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.1)}.sidebar-header h5{color:white;font-weight:700;margin:0;font-size:.95rem}.sidebar-menu{padding:15px 0}.sidebar-menu .menu-label{color:#94a3b8;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;padding:10px 20px 5px;font-weight:600}.sidebar-menu a{display:flex;align-items:center;padding:10px 20px;color:#cbd5e1;text-decoration:none;font-size:.88rem;border-left:3px solid transparent}.sidebar-menu a:hover,.sidebar-menu a.active{background:#334155;color:white;border-left-color:#3b82f6}.sidebar-menu a i{width:22px;margin-right:10px;text-align:center}.main-content{margin-left:var(--sidebar-width);min-height:100vh}.topbar{height:60px;background:white;box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;padding:0 25px;position:sticky;top:0;z-index:999}.content-area{padding:25px}.card{border:none;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}.stat-card{border-radius:12px;padding:20px;color:white;position:relative;overflow:hidden}.stat-card .stat-icon{position:absolute;right:15px;top:15px;font-size:2.5rem;opacity:.2}.stat-card .stat-value{font-size:1.8rem;font-weight:700}.stat-card .stat-label{font-size:.85rem;opacity:.9}@media(max-width:991px){.sidebar{display:none}.main-content{margin-left:0}}</style>@stack('styles')</head><body>
-<nav class="sidebar"><div class="sidebar-header"><i class="fas fa-graduation-cap" style="font-size:2rem;color:#60a5fa;margin-bottom:8px"></i><h5>Системаи Идоракунии Ҳозирӣ</h5></div><div class="sidebar-menu">
+<style>
+:root{--sidebar-width:260px;--sidebar-bg:linear-gradient(180deg,#1a1f36 0%,#1e293b 100%)}
+*{transition:all .2s ease}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f0f2f5;overflow-x:hidden}
+
+/* Sidebar */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-width);height:100vh;background:linear-gradient(180deg,#1a1f36 0%,#1e293b 100%);z-index:1000;overflow-y:auto;box-shadow:4px 0 15px rgba(0,0,0,.1)}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
+.sidebar-header{padding:25px 20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+.sidebar-header h5{color:white;font-weight:700;margin:0;font-size:.9rem;letter-spacing:.5px}
+.sidebar-header i{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 4px rgba(96,165,250,.3))}
+.sidebar-menu{padding:15px 0}
+.sidebar-menu .menu-label{color:#64748b;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;padding:15px 20px 5px;font-weight:700}
+.sidebar-menu a{display:flex;align-items:center;padding:11px 20px;color:#94a3b8;text-decoration:none;font-size:.85rem;border-left:3px solid transparent;margin:1px 0;position:relative;overflow:hidden}
+.sidebar-menu a::before{content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(90deg,rgba(96,165,250,.1),transparent);opacity:0;transition:.3s}
+.sidebar-menu a:hover::before{opacity:1}
+.sidebar-menu a:hover{color:#e2e8f0;border-left-color:#60a5fa;transform:translateX(3px)}
+.sidebar-menu a.active{background:rgba(59,130,246,.1);color:#fff;border-left-color:#3b82f6;font-weight:500}
+.sidebar-menu a.active::after{content:'';position:absolute;right:15px;width:6px;height:6px;background:#3b82f6;border-radius:50%}
+.sidebar-menu a i{width:20px;margin-right:12px;text-align:center;font-size:.8rem}
+
+/* Main */
+.main-content{margin-left:var(--sidebar-width);min-height:100vh}
+.topbar{height:65px;background:white;box-shadow:0 2px 10px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:999;border-bottom:1px solid #e5e7eb}
+.content-area{padding:25px 30px}
+
+/* Cards */
+.card{border:none;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:transform .2s,box-shadow .2s}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.card-header{border-bottom:1px solid #f1f5f9}
+
+/* Stat Cards */
+.stat-card{border-radius:14px;padding:22px;color:white;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+.stat-card::after{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;background:rgba(255,255,255,.05);border-radius:50%;transform:rotate(45deg)}
+.stat-card .stat-icon{position:absolute;right:15px;top:15px;font-size:2.8rem;opacity:.15}
+.stat-card .stat-value{font-size:2rem;font-weight:800;text-shadow:0 2px 4px rgba(0,0,0,.1)}
+.stat-card .stat-label{font-size:.82rem;opacity:.9;margin-top:3px}
+
+/* Tables */
+.table{font-size:.87rem}
+.table th{font-weight:600;color:#475569;text-transform:uppercase;font-size:.75rem;letter-spacing:.5px;padding:12px 16px;border-bottom:2px solid #e2e8f0}
+.table td{padding:12px 16px;vertical-align:middle}
+.table-hover tbody tr:hover{background:linear-gradient(90deg,rgba(59,130,246,.02),transparent)}
+
+/* Buttons */
+.btn{border-radius:8px;font-weight:500;font-size:.85rem;padding:8px 16px;transition:all .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.btn-sm{padding:5px 10px;font-size:.78rem;border-radius:6px}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);border:none}
+.btn-primary:hover{background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 15px rgba(37,99,235,.3)}
+.btn-success{background:linear-gradient(135deg,#22c55e,#16a34a);border:none}
+.btn-warning{background:linear-gradient(135deg,#f59e0b,#d97706);border:none}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);border:none}
+
+/* Badges */
+.badge{padding:5px 10px;font-weight:500;font-size:.75rem;border-radius:6px}
+
+/* Form Controls */
+.form-control,.form-select{border-radius:8px;border-color:#e2e8f0;padding:10px 14px;font-size:.87rem;transition:border-color .2s,box-shadow .2s}
+.form-control:focus,.form-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-label{font-weight:500;font-size:.85rem;color:#374151;margin-bottom:6px}
+
+/* Alerts */
+.alert{border:none;border-radius:10px;padding:14px 20px;font-size:.87rem}
+.alert-success{background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(22,163,74,.05));color:#15803d;border-left:4px solid #22c55e}
+.alert-danger{background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(220,38,38,.05));color:#b91c1c;border-left:4px solid #ef4444}
+
+/* Progress bars */
+.progress{border-radius:8px;background:#f1f5f9}
+.progress-bar{border-radius:8px;font-weight:600;font-size:.75rem}
+
+/* Pagination */
+.pagination{gap:4px}
+.pagination .page-link{border-radius:8px;border:none;color:#475569;padding:8px 14px;font-size:.83rem}
+.pagination .page-item.active .page-link{background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 2px 8px rgba(37,99,235,.3)}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.content-area>*{animation:fadeInUp .4s ease}
+
+/* Responsive */
+@media(max-width:991px){.sidebar{display:none}.main-content{margin-left:0}.content-area{padding:15px}}
+</style>
+@stack('styles')</head><body>
+<nav class="sidebar"><div class="sidebar-header"><i class="fas fa-graduation-cap" style="font-size:2.2rem;margin-bottom:10px;display:block"></i><h5>Системаи Идоракунии Ҳозирӣ</h5><small style="color:#64748b;font-size:.7rem">Донишгоҳҳо ва Коллеҷҳо</small></div><div class="sidebar-menu">
 <div class="menu-label">Асосӣ</div>
 <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}"><i class="fas fa-tachometer-alt"></i>Панели идоракунӣ</a>
 @can('attendance.create')<div class="menu-label">Ҳозирӣ</div><a href="{{ route('attendance.create') }}" class="{{ request()->routeIs('attendance.create*') ? 'active' : '' }}"><i class="fas fa-clipboard-check"></i>Сабти ҳозирӣ</a>@endcan
@@ -17,7 +102,7 @@
 @can('statistics.view')<a href="{{ route('statistics.index') }}" class="{{ request()->routeIs('statistics.*') ? 'active' : '' }}"><i class="fas fa-chart-pie"></i>Омори моҳона</a>@endcan
 @role('admin')<div class="menu-label">Система</div><a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}"><i class="fas fa-user-cog"></i>Корбарон</a>@can('logs.view')<a href="{{ route('logs.index') }}" class="{{ request()->routeIs('logs.*') ? 'active' : '' }}"><i class="fas fa-history"></i>Гузориши амалҳо</a>@endcan @endrole
 </div></nav>
-<div class="main-content"><header class="topbar"><h6 class="mb-0" style="font-weight:600;color:#1e293b">@yield('title','Панели идоракунӣ')</h6><div class="d-flex align-items-center gap-3"><span class="text-muted small">{{ Auth::user()->name }}</span><div class="dropdown"><button class="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"><i class="fas fa-user-circle"></i></button><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="{{ route('password.change') }}"><i class="fas fa-key me-2"></i>Тағйири рамз</a></li><li><hr class="dropdown-divider"></li><li><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Баромадан</button></form></li></ul></div></div></header>
+<div class="main-content"><header class="topbar"><div class="d-flex align-items-center"><h6 class="mb-0" style="font-weight:700;color:#1e293b;font-size:1.05rem">@yield('title','Панели идоракунӣ')</h6></div><div class="d-flex align-items-center gap-3"><div class="text-end"><div style="font-weight:600;font-size:.87rem;color:#374151">{{ Auth::user()->name }}</div><div style="font-size:.72rem;color:#9ca3af">@if(Auth::user()->hasRole('admin'))Администратор@elseif(Auth::user()->hasRole('dean'))Декан@elseif(Auth::user()->hasRole('supervisor'))Масъули ҳозирӣ@endif</div></div><div class="dropdown"><button class="btn btn-light btn-sm dropdown-toggle" style="border-radius:50%;width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e0e7ff,#ede9fe);border:none" data-bs-toggle="dropdown"><i class="fas fa-user" style="color:#6366f1"></i></button><ul class="dropdown-menu dropdown-menu-end" style="border:none;box-shadow:0 10px 40px rgba(0,0,0,.12);border-radius:10px;padding:8px"><li><a class="dropdown-item" style="border-radius:6px;padding:10px 15px" href="{{ route('password.change') }}"><i class="fas fa-key me-2 text-primary"></i>Тағйири рамз</a></li><li><hr class="dropdown-divider"></li><li><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="dropdown-item text-danger" style="border-radius:6px;padding:10px 15px"><i class="fas fa-sign-out-alt me-2"></i>Баромадан</button></form></li></ul></div></div></header>
 <div class="content-area">
 @if(session('success'))<div class="alert alert-success alert-dismissible fade show"><i class="fas fa-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>@endif
 @if(session('error'))<div class="alert alert-danger alert-dismissible fade show"><i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>@endif
