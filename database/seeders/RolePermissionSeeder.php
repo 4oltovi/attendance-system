@@ -15,10 +15,15 @@ class RolePermissionSeeder extends Seeder {
             'groups.view','groups.create','groups.edit','groups.delete',
             'students.view','students.create','students.edit','students.delete','students.import',
             'attendance.view','attendance.create','attendance.edit','attendance.delete',
-            'reports.view','reports.export','statistics.view','logs.view','permissions.manage',
+            'reports.view','reports.export','statistics.view','logs.view','logs.clear','permissions.manage',
         ];
         foreach ($permissions as $p) { Permission::create(['name' => $p]); }
         
+        // Super Admin — ҳамон admin вале логҳо сабт НАШАВАД
+        $superAdmin = Role::create(['name' => 'super_admin', 'description' => 'Суперадмин (бе лог)']);
+        $superAdmin->givePermissionTo(Permission::all());
+
+        // Admin — дастрасии пурра, амалҳояш дар лог сабт МЕШАВАД
         $admin = Role::create(['name' => 'admin', 'description' => 'Администратори система']);
         $admin->givePermissionTo(Permission::all());
         

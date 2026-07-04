@@ -14,6 +14,13 @@ class ActivityLogController extends Controller {
         $logs = $query->latest()->paginate(25)->withQueryString();
         $users = User::orderBy('name')->get();
         $modules = ['auth'=>'Аутентификатсия','users'=>'Корбарон','faculties'=>'Факултетҳо','specialties'=>'Ихтисосҳо','courses'=>'Курсҳо','groups'=>'Гурӯҳҳо','students'=>'Донишҷӯён','attendance'=>'Ҳозирӣ'];
-        return view('logs.index', compact('logs','users','modules'));
+        $totalLogs = ActivityLog::count();
+        return view('logs.index', compact('logs','users','modules','totalLogs'));
+    }
+
+    public function clearAll() {
+        $count = ActivityLog::count();
+        ActivityLog::truncate();
+        return redirect()->route('logs.index')->with('success', "Ҳамаи {$count} сабти лог бомуваффақият тоза карда шуд.");
     }
 }

@@ -3,7 +3,13 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div><h5 class="mb-1">Гузориши амалҳо</h5><small class="text-muted">Сабти ҳамаи амалҳои корбарон</small></div>
+        <div><h5 class="mb-1">Гузориши амалҳо</h5><small class="text-muted">Сабти ҳамаи амалҳои корбарон ({{ $totalLogs }} сабт)</small></div>
+        @if($totalLogs > 0)
+        <form method="POST" action="{{ route('logs.clear') }}" onsubmit="return confirm('Оё мутмаин ҳастед? Ҳамаи {{ $totalLogs }} сабти лог нест мешавад!')">
+            @csrf @method('DELETE')
+            <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt me-1"></i>Тоза кардани ҳама ({{ $totalLogs }})</button>
+        </form>
+        @endif
     </div>
 
     <!-- Filters -->
