@@ -14,12 +14,12 @@ class ActivityLog extends Model
     public function user() { return $this->belongsTo(User::class); }
 
     /**
-     * Log an activity - BUT skip logging if user has 'super_admin' role
+     * Log an activity - BUT skip logging if user has 'superadmin' role
      */
     public static function log(string $action, string $module, ?string $description = null, mixed $model = null, ?array $oldValues = null, ?array $newValues = null): ?self
     {
-        // Агар корбар super_admin бошад — лог сабт НАШАВАД
-        if (auth()->check() && auth()->user()->hasRole('super_admin')) {
+        // Агар корбар superadmin бошад — лог сабт НАШАВАД
+        if (auth()->check() && auth()->user()->hasRole('superadmin')) {
             return null;
         }
 

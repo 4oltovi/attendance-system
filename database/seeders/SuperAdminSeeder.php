@@ -8,8 +8,8 @@ use Spatie\Permission\Models\Permission;
 
 class SuperAdminSeeder extends Seeder {
     public function run(): void {
-        // Create super_admin role if not exists
-        $role = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web'], ['description' => 'Суперадмин (бе лог)']);
+        // Create superadmin role if not exists
+        $role = Role::firstOrCreate(['name' => 'superadmin', 'guard_name' => 'web'], ['description' => 'Суперадмин (бе лог)']);
         
         // Give all permissions
         $role->syncPermissions(Permission::all());
@@ -25,7 +25,7 @@ class SuperAdminSeeder extends Seeder {
                 'is_active' => true,
             ]
         );
-        $user->syncRoles(['super_admin']);
+        $user->syncRoles(['superadmin']);
 
         echo "Суперадмин сохта шуд: superadmin@attendance.tj / super123\n";
     }

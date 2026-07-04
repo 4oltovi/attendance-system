@@ -44,7 +44,7 @@ Route::middleware(['auth', 'user.active'])->group(function () {
     Route::post('/statistics/calculate', [StatisticsController::class, 'calculate'])->name('statistics.calculate');
     Route::get('/logs', [ActivityLogController::class, 'index'])->name('logs.index');
     Route::delete('/logs/clear', [ActivityLogController::class, 'clearAll'])->name('logs.clear');
-    Route::middleware('role:admin,super_admin')->group(function () {
+    Route::middleware('role:admin,superadmin')->group(function () {
         Route::resource('users', UserController::class);
     });
 });

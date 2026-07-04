@@ -20,7 +20,7 @@ class RolePermissionSeeder extends Seeder {
         foreach ($permissions as $p) { Permission::create(['name' => $p]); }
         
         // Super Admin — ҳамон admin вале логҳо сабт НАШАВАД
-        $superAdmin = Role::create(['name' => 'super_admin', 'description' => 'Суперадмин (бе лог)']);
+        $superAdmin = Role::create(['name' => 'superadmin', 'description' => 'Суперадмин (бе лог)']);
         $superAdmin->givePermissionTo(Permission::all());
 
         // Admin — дастрасии пурра, амалҳояш дар лог сабт МЕШАВАД
