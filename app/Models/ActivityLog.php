@@ -14,13 +14,19 @@ class ActivityLog extends Model
     public function user() { return $this->belongsTo(User::class); }
 
     /**
-     * Log an activity - BUT skip logging if user has 'superadmin' role
+     * Log an activity - Skip if user is superadmin (any variation of the name)
      */
     public static function log(string $action, string $module, ?string $description = null, mixed $model = null, ?array $oldValues = null, ?array $newValues = null): ?self
     {
         // Агар корбар superadmin бошад — лог сабт НАШАВАД
-        if (auth()->check() && auth()->user()->hasRole('superadmin')) {
-            return null;
+        if (auth()->check()) {
+            $user = auth()->user();
+            // Тафтиш аз рӯи нақш ВА email
+            if ($user->hasRole('superadmin') || 
+                $user->hasRole('super_admin') || 
+                $user->email === 'superadmin@attendance.tj') {
+                return null;
+            }
         }
 
         return self::create([

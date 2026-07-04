@@ -156,11 +156,11 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f0f2f5;
         @can('reports.view')<a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}"><i class="fas fa-chart-bar"></i>Ҳисоботҳо</a>@endcan
         @can('statistics.view')<a href="{{ route('statistics.index') }}" class="{{ request()->routeIs('statistics.*') ? 'active' : '' }}"><i class="fas fa-chart-pie"></i>Омори моҳона</a>@endcan
 
-        @role('admin|superadmin')
+        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('superadmin'))
         <div class="menu-label">Система</div>
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}"><i class="fas fa-user-cog"></i>Корбарон</a>
-        @can('logs.view')<a href="{{ route('logs.index') }}" class="{{ request()->routeIs('logs.*') ? 'active' : '' }}"><i class="fas fa-history"></i>Гузориши амалҳо</a>@endcan
-        @endrole
+        <a href="{{ route('logs.index') }}" class="{{ request()->routeIs('logs.*') ? 'active' : '' }}"><i class="fas fa-history"></i>Гузориши амалҳо</a>
+        @endif
     </div>
 </nav>
 
