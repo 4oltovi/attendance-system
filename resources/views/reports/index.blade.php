@@ -26,7 +26,7 @@
                         <label class="form-label">Факултет</label>
                         <select class="form-select" name="faculty_id" id="report_faculty">
                             <option value="">Ҳама</option>
-                            @foreach($faculties as $f)<option value="{{ $f->id }}">{{ $f->name }}</option>@endforeach
+                            @foreach($faculties as $f)<option value="{{ $f->id }}" {{ (isset($reportType) && request('faculty_id')==$f->id)?'selected':'' }}>{{ $f->name }}</option>@endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -42,15 +42,15 @@
                     </div>
                 </div>
 
-                <!-- Group filter (shown dynamically) -->
-                <div class="row g-3 mt-2" id="groupFilterRow" style="display:none;">
-                    <div class="col-md-3">
+                <!-- Additional filters -->
+                <div class="row g-3 mt-2" id="additionalFilters" style="display:none;">
+                    <div class="col-md-3" id="groupFilterDiv" style="display:none;">
                         <label class="form-label">Гурӯҳ</label>
                         <select class="form-select" name="group_id" id="report_group">
                             <option value="">Аввал факултетро интихоб кунед</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" id="courseFilterDiv" style="display:none;">
                         <label class="form-label">Курс</label>
                         <select class="form-select" name="course_id">
                             <option value="">Ҳама</option>
@@ -70,53 +70,142 @@
             <button onclick="window.print()" class="btn btn-sm btn-outline-secondary"><i class="fas fa-print me-1"></i>Чоп</button>
         </div>
         <div class="card-body p-0">
-            @if($reportType === 'group' && isset($data['results']))
+
+            {{-- GROUP REPORT --}}
+            @if(isset($data['type']) && $data['type'] === 'group' && isset($data['results']))
             <div class="table-responsive"><table class="table table-hover mb-0">
                 <thead class="table-light"><tr><th>#</th><th>Ному насаб</th><th class="text-center">Рӯзҳо</th><th class="text-center">Ҳозир</th><th class="text-center">Ғоиб</th><th class="text-center">Сабабнок</th><th class="text-center">Дер</th><th class="text-center">Фоиз</th></tr></thead>
                 <tbody>
-                    @foreach($data['results'] as $i => $row)
+                    @forelse($data['results'] as $i => $row)
                     <tr>
                         <td>{{ $i+1 }}</td>
-                        <td>{{ $row['student']->full_name }}</td>
+                        <td><strong>{{ $row['student']->full_name }}</strong></td>
                         <td class="text-center">{{ $row['total'] }}</td>
                         <td class="text-center"><span class="badge bg-success">{{ $row['present'] }}</span></td>
                         <td class="text-center"><span class="badge bg-danger">{{ $row['absent'] }}</span></td>
                         <td class="text-center"><span class="badge bg-warning">{{ $row['excused'] }}</span></td>
                         <td class="text-center"><span class="badge bg-info">{{ $row['late'] }}</span></td>
-                        <td class="text-center">
-                            <span class="badge bg-{{ $row['attendance_pct']>=80?'success':($row['attendance_pct']>=60?'warning':'danger') }}">{{ $row['attendance_pct'] }}%</span>
-                        </td>
+                        <td class="text-center"><span class="badge bg-{{ $row['attendance_pct']>=80?'success':($row['attendance_pct']>=60?'warning':'danger') }}">{{ $row['attendance_pct'] }}%</span></td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr><td colspan="8" class="text-center text-muted py-3">Маълумот мавҷуд нест</td></tr>
+                    @endforelse
                 </tbody>
             </table></div>
 
-            @elseif(($reportType === 'faculty' || $reportType === 'course') && isset($data['results']))
+            {{-- FACULTY REPORT --}}
+            @elseif(isset($data['type']) && $data['type'] === 'faculty' && isset($data['results']))
             <div class="table-responsive"><table class="table table-hover mb-0">
-                <thead class="table-light"><tr><th>#</th><th>Гурӯҳ</th><th class="text-center">Сабтҳо</th><th class="text-center">Ҳозир</th><th class="text-center">Фоиз</th></tr></thead>
+                <thead class="table-light"><tr><th>#</th><th>Гурӯҳ</th><th>Ихтисос</th><th>Курс</th><th class="text-center">Донишҷӯён</th><th class="text-center">Сабтҳо</th><th class="text-center">Ҳозир</th><th class="text-center">Ғоиб</th><th class="text-center">Фоиз</th></tr></thead>
                 <tbody>
-                    @foreach($data['results'] as $i => $row)
+                    @forelse($data['results'] as $i => $row)
                     <tr>
                         <td>{{ $i+1 }}</td>
                         <td><strong>{{ $row['group']->name }}</strong></td>
+                        <td><small>{{ $row['group']->specialty->name ?? '-' }}</small></td>
+                        <td class="text-center"><span class="badge bg-primary">{{ $row['group']->course->course_number ?? '-' }}</span></td>
+                        <td class="text-center">{{ $row['total_students'] }}</td>
+                        <td class="text-center">{{ $row['total_records'] }}</td>
+                        <td class="text-center"><span class="badge bg-success">{{ $row['present'] }}</span></td>
+                        <td class="text-center"><span class="badge bg-danger">{{ $row['absent'] }}</span></td>
+                        <td class="text-center">
+                            <div class="progress" style="height:20px;min-width:80px"><div class="progress-bar bg-{{ $row['attendance_pct']>=80?'success':($row['attendance_pct']>=60?'warning':'danger') }}" style="width:{{ $row['attendance_pct'] }}%">{{ $row['attendance_pct'] }}%</div></div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="9" class="text-center text-muted py-3">Маълумот мавҷуд нест</td></tr>
+                    @endforelse
+                </tbody>
+            </table></div>
+
+            {{-- ALL FACULTIES REPORT --}}
+            @elseif(isset($data['type']) && $data['type'] === 'all_faculties' && isset($data['results']))
+            <div class="table-responsive"><table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>#</th><th>Факултет</th><th class="text-center">Донишҷӯён</th><th class="text-center">Гурӯҳҳо</th><th class="text-center">Сабтҳо</th><th class="text-center">Ҳозир</th><th class="text-center">Фоиз</th></tr></thead>
+                <tbody>
+                    @forelse($data['results'] as $i => $row)
+                    <tr>
+                        <td>{{ $i+1 }}</td>
+                        <td><strong>{{ $row['faculty']->name }}</strong></td>
+                        <td class="text-center">{{ $row['total_students'] }}</td>
+                        <td class="text-center">{{ $row['total_groups'] }}</td>
                         <td class="text-center">{{ $row['total_records'] }}</td>
                         <td class="text-center"><span class="badge bg-success">{{ $row['present'] }}</span></td>
                         <td class="text-center">
                             <div class="progress" style="height:20px;min-width:80px"><div class="progress-bar bg-{{ $row['attendance_pct']>=80?'success':($row['attendance_pct']>=60?'warning':'danger') }}" style="width:{{ $row['attendance_pct'] }}%">{{ $row['attendance_pct'] }}%</div></div>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr><td colspan="7" class="text-center text-muted py-3">Маълумот мавҷуд нест</td></tr>
+                    @endforelse
                 </tbody>
             </table></div>
 
-            @elseif($reportType === 'date_range')
-            <div class="p-4"><div class="row g-3">
-                <div class="col-md-3"><div class="card bg-primary text-white text-center"><div class="card-body"><h3>{{ $data['sessions_count'] }}</h3><small>Ҷаласаҳо</small></div></div></div>
-                <div class="col-md-3"><div class="card bg-success text-white text-center"><div class="card-body"><h3>{{ $data['total_present'] }}</h3><small>Ҳозир</small></div></div></div>
-                <div class="col-md-3"><div class="card bg-danger text-white text-center"><div class="card-body"><h3>{{ $data['total_absent'] }}</h3><small>Ғоиб</small></div></div></div>
-                <div class="col-md-3"><div class="card bg-info text-white text-center"><div class="card-body"><h3>{{ $data['attendance_pct'] }}%</h3><small>Фоизи ҳозирӣ</small></div></div></div>
-            </div></div>
+            {{-- COURSE REPORT --}}
+            @elseif(isset($data['type']) && ($data['type'] === 'course' || $data['type'] === 'all_courses') && isset($data['results']))
+            <div class="table-responsive"><table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>#</th>
+                    @if($data['type'] === 'all_courses')<th>Курс</th><th class="text-center">Гурӯҳҳо</th>@else<th>Гурӯҳ</th><th>Факултет</th>@endif
+                    <th class="text-center">Донишҷӯён</th><th class="text-center">Сабтҳо</th><th class="text-center">Ҳозир</th><th class="text-center">Фоиз</th></tr></thead>
+                <tbody>
+                    @forelse($data['results'] as $i => $row)
+                    <tr>
+                        <td>{{ $i+1 }}</td>
+                        @if($data['type'] === 'all_courses')
+                        <td><strong>{{ $row['course']->display_name }}</strong></td>
+                        <td class="text-center">{{ $row['total_groups'] }}</td>
+                        @else
+                        <td><strong>{{ $row['group']->name }}</strong></td>
+                        <td><small>{{ $row['group']->faculty->name ?? '-' }}</small></td>
+                        @endif
+                        <td class="text-center">{{ $row['total_students'] }}</td>
+                        <td class="text-center">{{ $row['total_records'] }}</td>
+                        <td class="text-center"><span class="badge bg-success">{{ $row['present'] }}</span></td>
+                        <td class="text-center">
+                            <div class="progress" style="height:20px;min-width:80px"><div class="progress-bar bg-{{ $row['attendance_pct']>=80?'success':($row['attendance_pct']>=60?'warning':'danger') }}" style="width:{{ $row['attendance_pct'] }}%">{{ $row['attendance_pct'] }}%</div></div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="7" class="text-center text-muted py-3">Маълумот мавҷуд нест</td></tr>
+                    @endforelse
+                </tbody>
+            </table></div>
+
+            {{-- DATE RANGE REPORT --}}
+            @elseif(isset($data['type']) && $data['type'] === 'date_range')
+            <div class="p-4">
+                <!-- Summary Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-2"><div class="card bg-primary text-white text-center"><div class="card-body py-3"><h4 class="mb-0">{{ $data['sessions_count'] }}</h4><small>Ҷаласаҳо</small></div></div></div>
+                    <div class="col-md-2"><div class="card bg-success text-white text-center"><div class="card-body py-3"><h4 class="mb-0">{{ $data['total_present'] }}</h4><small>Ҳозир</small></div></div></div>
+                    <div class="col-md-2"><div class="card bg-danger text-white text-center"><div class="card-body py-3"><h4 class="mb-0">{{ $data['total_absent'] }}</h4><small>Ғоиб</small></div></div></div>
+                    <div class="col-md-2"><div class="card bg-warning text-white text-center"><div class="card-body py-3"><h4 class="mb-0">{{ $data['total_excused'] }}</h4><small>Сабабнок</small></div></div></div>
+                    <div class="col-md-2"><div class="card bg-info text-white text-center"><div class="card-body py-3"><h4 class="mb-0">{{ $data['total_late'] }}</h4><small>Дер омад</small></div></div></div>
+                    <div class="col-md-2"><div class="card bg-dark text-white text-center"><div class="card-body py-3"><h4 class="mb-0">{{ $data['attendance_pct'] }}%</h4><small>Фоиз</small></div></div></div>
+                </div>
+
+                <!-- Session Details Table -->
+                @if(isset($data['session_details']) && count($data['session_details']) > 0)
+                <div class="table-responsive"><table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>#</th><th>Сана</th><th>Факултет</th><th>Гурӯҳ</th><th class="text-center">Сабтҳо</th><th class="text-center">Ҳозир</th><th class="text-center">Ғоиб</th></tr></thead>
+                    <tbody>
+                        @foreach($data['session_details'] as $i => $detail)
+                        <tr>
+                            <td>{{ $i+1 }}</td>
+                            <td><strong>{{ $detail['session']->date->format('d.m.Y') }}</strong></td>
+                            <td><small>{{ $detail['session']->faculty->name ?? '-' }}</small></td>
+                            <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ $detail['session']->group->name ?? '-' }}</span></td>
+                            <td class="text-center">{{ $detail['total'] }}</td>
+                            <td class="text-center"><span class="badge bg-success">{{ $detail['present'] }}</span></td>
+                            <td class="text-center"><span class="badge bg-danger">{{ $detail['absent'] }}</span></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table></div>
+                @endif
+            </div>
             @endif
+
         </div>
     </div>
     @endif
@@ -126,10 +215,40 @@
 @push('scripts')
 <script>
 document.getElementById('report_type').addEventListener('change', function(){
-    document.getElementById('groupFilterRow').style.display = (this.value==='group')?'flex':'none';
+    const type = this.value;
+    const additional = document.getElementById('additionalFilters');
+    const groupDiv = document.getElementById('groupFilterDiv');
+    const courseDiv = document.getElementById('courseFilterDiv');
+
+    groupDiv.style.display = 'none';
+    courseDiv.style.display = 'none';
+    additional.style.display = 'none';
+
+    if (type === 'group') {
+        groupDiv.style.display = 'block';
+        additional.style.display = 'flex';
+    } else if (type === 'course') {
+        courseDiv.style.display = 'block';
+        additional.style.display = 'flex';
+    }
 });
+
 document.getElementById('report_faculty').addEventListener('change', function(){
-    if(this.value){fetch(`/api/groups-filter?faculty_id=${this.value}`).then(r=>r.json()).then(d=>{const g=document.getElementById('report_group');g.innerHTML='<option value="">Интихоб...</option>';d.forEach(i=>g.innerHTML+=`<option value="${i.id}">${i.name}</option>`);});}
+    if(this.value){
+        fetch(`/api/groups-filter?faculty_id=${this.value}`)
+            .then(r=>r.json())
+            .then(d=>{
+                const g=document.getElementById('report_group');
+                g.innerHTML='<option value="">Интихоб кунед...</option>';
+                d.forEach(i=>g.innerHTML+=`<option value="${i.id}">${i.name}</option>`);
+            });
+    }
 });
+
+// Auto-show additional filters if report type is pre-selected
+const reportType = document.getElementById('report_type');
+if (reportType.value) {
+    reportType.dispatchEvent(new Event('change'));
+}
 </script>
 @endpush
