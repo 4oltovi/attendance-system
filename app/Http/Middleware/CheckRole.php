@@ -8,8 +8,11 @@ class CheckRole {
     public function handle(Request $request, Closure $next, string ...$roles): Response {
         if (!$request->user()) { abort(403); }
         
-        // Superadmin ҲАМЕША дастрасӣ дорад
-        if ($request->user()->hasRole('superadmin')) {
+        // Superadmin ҲАМЕША дастрасӣ дорад (ҳамаи вариантҳо)
+        if ($request->user()->hasRole('superadmin') || 
+            $request->user()->hasRole('super_admin') || 
+            $request->user()->hasRole('super admin') ||
+            $request->user()->email === 'superadmin@attendance.tj') {
             return $next($request);
         }
         

@@ -156,7 +156,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f0f2f5;
         @can('reports.view')<a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}"><i class="fas fa-chart-bar"></i>Ҳисоботҳо</a>@endcan
         @can('statistics.view')<a href="{{ route('statistics.index') }}" class="{{ request()->routeIs('statistics.*') ? 'active' : '' }}"><i class="fas fa-chart-pie"></i>Омори моҳона</a>@endcan
 
-        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('superadmin'))
+        @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('superadmin') || Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('super admin') || Auth::user()->email === 'superadmin@attendance.tj')
         <div class="menu-label">Система</div>
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}"><i class="fas fa-user-cog"></i>Корбарон</a>
         <a href="{{ route('logs.index') }}" class="{{ request()->routeIs('logs.*') ? 'active' : '' }}"><i class="fas fa-history"></i>Гузориши амалҳо</a>
@@ -176,7 +176,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f0f2f5;
         <div class="d-flex align-items-center gap-2">
             <div class="text-end d-none d-sm-block">
                 <div style="font-weight:600;font-size:.87rem;color:#374151">{{ Auth::user()->name }}</div>
-                <div style="font-size:.72rem;color:#9ca3af">@if(Auth::user()->hasRole('superadmin'))Суперадмин@elseif(Auth::user()->hasRole('admin'))Администратор@elseif(Auth::user()->hasRole('dean'))Декан@elseif(Auth::user()->hasRole('supervisor'))Масъули ҳозирӣ@endif</div>
+                <div style="font-size:.72rem;color:#9ca3af">@if(Auth::user()->hasRole('superadmin') || Auth::user()->hasRole('super_admin') || Auth::user()->email === 'superadmin@attendance.tj')Суперадмин@elseif(Auth::user()->hasRole('admin'))Администратор@elseif(Auth::user()->hasRole('dean'))Декан@elseif(Auth::user()->hasRole('supervisor'))Масъули ҳозирӣ@endif</div>
             </div>
             <div class="dropdown">
                 <button class="btn btn-light btn-sm dropdown-toggle" style="border-radius:50%;width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e0e7ff,#ede9fe);border:none" data-bs-toggle="dropdown">
